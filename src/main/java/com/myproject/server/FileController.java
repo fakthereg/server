@@ -2,21 +2,22 @@ package com.myproject.server;
 
 import com.myproject.server.models.File;
 import com.myproject.server.repositories.FileRepository;
+import com.myproject.server.repositories.UserRepository;
+import net.minidev.json.JSONArray;
+import org.bson.json.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.io.Resource;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -25,6 +26,7 @@ public class FileController {
 
     @Autowired
     private FileRepository repository;
+    private UserRepository userRepository;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<File> getAllFiles() {
@@ -43,10 +45,10 @@ public class FileController {
 */
 
     @RequestMapping(value = "/{category}/", method = RequestMethod.GET)
-    public List<File> getFilesByCategory(@PathVariable String category){
+    public List<File> getFilesByCategory(@PathVariable String category) {
         ArrayList<File> result = new ArrayList<>();
-        for (File file : repository.findAll()){
-            if(file.getCategory().equals(category)){
+        for (File file : repository.findAll()) {
+            if (file.getCategory().equals(category)) {
                 result.add(file);
             }
         }
@@ -54,11 +56,13 @@ public class FileController {
     }
 
 
+
     @GetMapping("/downloadFile/{category}/{filename}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String category, @PathVariable(value = "filename") String filename, HttpServletRequest request) {
         // Load file as Resource
         Resource resource;
-
+        File file = repository.findFileByFilename(filename);
+        String outputFilename = file.getArtist() + " - " + file.getTitle() + ".mp3";
         String fileBasePath = "C:\\1\\" + category + "\\";
         System.out.println("Trying to download file at: " + fileBasePath + filename);
         Path path = Paths.get(fileBasePath + filename);
@@ -68,6 +72,12 @@ public class FileController {
             e.printStackTrace();
             return null;
         }
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                .filename(outputFilename, StandardCharsets.UTF_8)
+                .build();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentDisposition(contentDisposition);
+
 
         // Try to determine file's content type
         String contentType = null;
@@ -77,17 +87,16 @@ public class FileController {
             System.out.println("Could not determine file type.");
         }
 
-        // Fallback to the default content type if type could not be determined
-        if (contentType == null) {
-            contentType = "application/octet-stream";
-        }
         System.out.println("File found and sent");
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+ /*       return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .body(resource);
+*/
+        return new ResponseEntity<>(resource, httpHeaders, HttpStatus.OK);
     }
-    /*
-        @RequestMapping(value = "/", params = "id", method = RequestMethod.GET)
+
+
+ /*       @RequestMapping(value = "/", params = "id", method = RequestMethod.GET)
         public File getFileById(@RequestParam("id") ObjectId id) {
             return repository.findBy_id(id);
         }

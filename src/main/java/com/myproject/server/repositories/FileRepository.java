@@ -10,7 +10,7 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "file", path = "file")
 public interface FileRepository extends MongoRepository<File, String>{
     File findBy_id(ObjectId _id);
-    File findFileByName(String name);
+    File findFileByTitle(String title);
     File findFileByFilename(String filename);
     List<File> findFilesByCategory(String category);
 }

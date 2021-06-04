@@ -1,12 +1,17 @@
 package com.myproject.server.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.bson.types.ObjectId;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 
 public class File {
     @Id
     private ObjectId _id;
-    private String name;
+    private String artist;
+    private String title;
     private String category;
     private String filename;
 
@@ -15,30 +20,47 @@ public class File {
     public File() {
     }
 
-    public File(ObjectId _id, String name, String category, String filename) {
+    public File(ObjectId _id, String artist, String title, String category, String filename) {
         this._id = _id;
-        this.name = name;
+        this.artist = artist;
+        this.title = title;
         this.category = category;
         this.filename = filename;
     }
 
-    //Getters & setters
+
+    public File(JSONObject jsonObject) {
+        try {
+            this._id = new ObjectId(jsonObject.getString("_id"));
+            this.artist = jsonObject.getString("artist");
+            this.title = jsonObject.getString("title");
+            this.category = jsonObject.getString("category");
+            this.filename = jsonObject.getString("filename");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
 
+//Getters & setters
+
+
+    @JsonSerialize(using= ToStringSerializer.class)
     public ObjectId get_id() {
         return _id;
     }
 
+    @JsonSerialize(using= ToStringSerializer.class)
     public void set_id(ObjectId _id) {
         this._id = _id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getCategory() {
@@ -57,8 +79,16 @@ public class File {
         this.filename = filename;
     }
 
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
     @Override
     public String toString() {
-        return super.toString();
+        return super.toString() +"/n" + artist +"/n"+ title +"/n"+ category +"/n"+ filename;
     }
 }

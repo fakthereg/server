@@ -1,8 +1,13 @@
 package com.myproject.server.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.bson.types.ObjectId;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -11,7 +16,7 @@ public class User {
     private String name;
     private String password;
     private int avatar;
-    private List<String> played;
+    private List<File> played;
     private int correct;
     private int wrong;
     private int score;
@@ -21,7 +26,7 @@ public class User {
     public User() {
     }
 
-    public User(ObjectId _id, String name, String password, int avatar, List<String> played, int correct, int wrong, int score) {
+    public User(ObjectId _id, String name, String password, int avatar, List<File> played, int correct, int wrong, int score) {
         this._id = _id;
         this.name = name;
         this.password = password;
@@ -34,11 +39,12 @@ public class User {
 
     //Getters & Setters
 
-
+    @JsonSerialize(using= ToStringSerializer.class)
     public ObjectId get_id() {
         return _id;
     }
 
+    @JsonSerialize(using= ToStringSerializer.class)
     public void set_id(ObjectId _id) {
         this._id = _id;
     }
@@ -67,11 +73,11 @@ public class User {
         this.avatar = avatar;
     }
 
-    public List<String> getPlayed() {
+    public List<File> getPlayed() {
         return played;
     }
 
-    public void setPlayed(List<String> played) {
+    public void setPlayed(List<File> played) {
         this.played = played;
     }
 
@@ -99,8 +105,12 @@ public class User {
         this.score = score;
     }
 
+
     @Override
     public String toString() {
         return String.format("_id: %s, username: %s, password: %s", _id, name, password);
     }
+
+
+
 }
