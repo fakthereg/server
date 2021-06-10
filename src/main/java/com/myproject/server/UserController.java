@@ -8,9 +8,7 @@ import com.myproject.server.repositories.UserRepository;
 
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.bson.json.JsonObject;
 import org.bson.types.ObjectId;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +64,7 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        log.warn(String.format("Json parsed: score=%s, correct=%s, wrong=%s", score,correct,wrong));
+        log.warn(String.format("Json parsed: score=%s, correct=%s, wrong=%s", score, correct, wrong));
         userFromRepo.setScore(score);
         userFromRepo.setCorrect(correct);
         userFromRepo.setWrong(wrong);
@@ -92,38 +90,29 @@ public class UserController {
         }
     }
 
-    @PostMapping(value = "/{name}/addToPlayed",
+    @PostMapping(value = "/addToPlayed/{username}",
             consumes = {"application/json", "application/x-www-form-urlencoded"})
-    public void addToPlayed(@PathVariable String name, @RequestBody String string) {
+    public void addToPlayedByUser(@PathVariable String username, @RequestBody String string) {
         log.warn("addToPlayed Received:   " + string);
-        User user = repository.findUserByName(name);
+        User user = repository.findUserByName(username);
         List<File> played = user.getPlayed();
-        File received;
-        try {
-            received = new File(new JSONObject(string));
-            played.add(received);
-        } catch (JSONException e) {
+        File file;
+        try{
+            file = new File(new JSONObject(string));
+            played.add(file);
+        } catch (Exception e){
             e.printStackTrace();
         }
         user.setPlayed(played);
         repository.save(user);
-        log.warn("addToPlayed Returned:   " + repository.findUserByName(name).getPlayed());
+        log.warn("addToPlayed saved:   " + repository.findUserByName(username).getPlayed());
     }
 
-    @GetMapping(value = "/getPlayed/{user}/{category}")
-    public List<File> getPlayedByUserAndCategory(@PathVariable String user, @PathVariable String category) {
-        log.warn("getPlayed Received:    username = " + user + "  category = " + category);
-        List<File> result = new ArrayList<>();
-        List<File> played = repository.findUserByName(user).getPlayed();
-        if (played.size() > 0) {
-            for (File file : played) {
-                if (file.getCategory().equals(category)) {
-                    result.add(file);
-                }
-            }
-        }
-        log.warn("getPlayed Returned:    " + result.toString());
-        return result;
+    @GetMapping(value = "/getPlayed/{username}")
+    public List<File> getPlayedByUser(@PathVariable String username) {
+        log.warn("getPlayed Received:    username = " + username );
+        log.warn("getPlayed Returned:    " + repository.findUserByName(username).getPlayed().toString());
+        return repository.findUserByName(username).getPlayed();
     }
     /*
         @RequestMapping(value = "/createUser", method = RequestMethod.POST)
