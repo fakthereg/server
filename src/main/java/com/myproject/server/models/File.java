@@ -14,18 +14,22 @@ public class File {
     private String title;
     private String category;
     private String filename;
+    private boolean answered;
+    private boolean correct;
 
     //Constructor
 
     public File() {
     }
 
-    public File(ObjectId _id, String artist, String title, String category, String filename) {
+    public File(ObjectId _id, String artist, String title, String category, String filename, boolean answered, boolean correct) {
         this._id = _id;
         this.artist = artist;
         this.title = title;
         this.category = category;
         this.filename = filename;
+        this.answered = answered;
+        this.correct = correct;
     }
 
 
@@ -87,8 +91,24 @@ public class File {
         this.artist = artist;
     }
 
+    public boolean isAnswered() {
+        return answered;
+    }
+
+    public void setAnswered(boolean answered) {
+        this.answered = answered;
+    }
+
+    public boolean isCorrect() {
+        return correct;
+    }
+
+    public void setCorrect(boolean correct) {
+        this.correct = correct;
+    }
+
     @Override
     public String toString() {
-        return super.toString() +"/n" + artist +"/n"+ title +"/n"+ category +"/n"+ filename;
+        return super.toString() +"  " + artist +"  "+ title +"  "+ category +"  "+ filename + "answered: " + answered + " correct: " + correct;
     }
 }

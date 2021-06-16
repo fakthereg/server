@@ -28,7 +28,11 @@ public class FileUploadController {
     @RequestMapping(value="/upload", method=RequestMethod.POST)
     public @ResponseBody String handleFileUpload(@RequestParam("category") String category,
                                                  @RequestParam("file") MultipartFile file){
+
         if (!file.isEmpty()) {
+            if (repository.findFileByFilename(file.getOriginalFilename()) != null) {
+                return "такая песня уже есть!";
+            }
             try {
                 byte[] bytes = file.getBytes();
                 BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(String.format("c://1//%s//%s", category, file.getOriginalFilename())));
@@ -36,14 +40,15 @@ public class FileUploadController {
                 stream.close();
                 File mFile = new File();
                 String artist = file.getOriginalFilename().split("(?: - )")[0].trim();
-                String title = file.getOriginalFilename().split("(?: - )")[0].split("[.]")[0].trim();
+                String title = file.getOriginalFilename().split("(?: - )")[1].split("[.]")[0].trim();
                 mFile.set_id(ObjectId.get());
                 mFile.setFilename(file.getOriginalFilename());
+
                 mFile.setCategory(category);
                 mFile.setTitle(title);
                 mFile.setArtist(artist);
                 repository.save(mFile);
-                return "Вы удачно загрузили " + file.getOriginalFilename() + " в " + category + "категорию ! ";
+                return "Вы удачно загрузили " + mFile.getFilename() + " в " + mFile.getCategory() + " категорию ! ";
             } catch (Exception e) {
                 return "Вам не удалось загрузить " + file.getOriginalFilename() + " => " + e.getMessage();
             }

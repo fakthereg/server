@@ -98,7 +98,10 @@ public class UserController {
         List<File> played = user.getPlayed();
         File file;
         try{
-            file = new File(new JSONObject(string));
+            JSONObject jsonObject = new JSONObject(string);
+            file = new File(jsonObject);
+            file.setAnswered(jsonObject.getBoolean("answered"));
+            file.setCorrect(jsonObject.getBoolean("correct"));
             played.add(file);
         } catch (Exception e){
             e.printStackTrace();
