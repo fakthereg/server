@@ -20,14 +20,16 @@ public class FileUploadController {
     @Autowired
     private FileRepository repository;
 
-    @RequestMapping(value="/upload", method=RequestMethod.GET)
-    public @ResponseBody String provideUploadInfo() {
+    @RequestMapping(value = "/upload", method = RequestMethod.GET)
+    public @ResponseBody
+    String provideUploadInfo() {
         return "Вы можете загружать файл с использованием того же URL.";
     }
 
-    @RequestMapping(value="/upload", method=RequestMethod.POST)
-    public @ResponseBody String handleFileUpload(@RequestParam("category") String category,
-                                                 @RequestParam("file") MultipartFile file){
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public @ResponseBody
+    String handleFileUpload(@RequestParam("category") String category,
+                            @RequestParam("file") MultipartFile file) {
 
         if (!file.isEmpty()) {
             if (repository.findFileByFilename(file.getOriginalFilename()) != null) {

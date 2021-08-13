@@ -3,11 +3,8 @@ package com.myproject.server.models;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.bson.types.ObjectId;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -21,8 +18,8 @@ public class User {
     private int wrong;
     private int score;
 
-
     //Constructors
+
     public User() {
     }
 

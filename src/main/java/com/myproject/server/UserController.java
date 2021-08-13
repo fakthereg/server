@@ -9,7 +9,6 @@ import com.myproject.server.repositories.UserRepository;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.bson.types.ObjectId;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -22,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
     @Autowired
     private UserRepository repository;
     private Log log = LogFactory.getLog(ServerApplication.class);
@@ -36,7 +36,6 @@ public class UserController {
         }
         return names;
     }
-
 
     @RequestMapping(value = "/", params = "name", method = RequestMethod.GET)
     public User getUserByName(@RequestParam("name") String name) {
@@ -97,13 +96,13 @@ public class UserController {
         User user = repository.findUserByName(username);
         List<File> played = user.getPlayed();
         File file;
-        try{
+        try {
             JSONObject jsonObject = new JSONObject(string);
             file = new File(jsonObject);
             file.setAnswered(jsonObject.getBoolean("answered"));
             file.setCorrect(jsonObject.getBoolean("correct"));
             played.add(file);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         user.setPlayed(played);
@@ -113,36 +112,10 @@ public class UserController {
 
     @GetMapping(value = "/getPlayed/{username}")
     public List<File> getPlayedByUser(@PathVariable String username) {
-        log.warn("getPlayed Received:    username = " + username );
+        log.warn("getPlayed Received:    username = " + username);
         log.warn("getPlayed Returned:    " + repository.findUserByName(username).getPlayed().toString());
         return repository.findUserByName(username).getPlayed();
     }
-    /*
-        @RequestMapping(value = "/createUser", method = RequestMethod.POST)
-        public User createUser(@Valid @RequestBody User user) {
-            user.set_id(ObjectId.get());
-            repository.save(user);
-            return user;
-        }
 
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void deleteUser(@PathVariable ObjectId id) {
-        repository.delete(repository.findBy_id(id));
-    }
-
-
-    @RequestMapping(value = "/", params = "id", method = RequestMethod.GET)
-    public User getUserById(@RequestParam("id") ObjectId id) {
-        return repository.findBy_id(id);
-    }
-
-
- @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public void modifyUserById(@PathVariable("id") ObjectId id, @Valid @RequestBody User user) {
-        user.set_id(id);
-        repository.save(user);
-    }
-    */
 }
 

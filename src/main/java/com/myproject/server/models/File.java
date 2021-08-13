@@ -32,7 +32,6 @@ public class File {
         this.correct = correct;
     }
 
-
     public File(JSONObject jsonObject) {
         try {
             this._id = new ObjectId(jsonObject.getString("_id"));
@@ -45,9 +44,7 @@ public class File {
         }
     }
 
-
 //Getters & setters
-
 
     @JsonSerialize(using= ToStringSerializer.class)
     public ObjectId get_id() {
